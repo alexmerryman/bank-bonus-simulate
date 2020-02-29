@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import logging
+import re
 
 from selenium import webdriver
 from selenium.webdriver.support.ui import Select
@@ -70,18 +71,24 @@ if driver.find_element_by_xpath("//div[@class='jss10 jss36 jss11 jss120 jss121 j
     # driver.find_element_by_xpath("//span[@class='jss42']").click()
 
 # Click 'More' until all bonuses are displayed on the page
-for i in range(10):
+total_showing_text = driver.find_element_by_xpath("//h6[@class='jss227 jss244 jss251 bonuses2__ShowingCountTypo-e8w5h-22 eqaqbT']").text
+total_num_bonuses = int(re.search(r"(?:of\s*)(\d*)", total_showing_text).group(1))
+showing_num_bonuses = int(re.search(r"(?:Showing\s*)(\d*)", total_showing_text).group(1))
+num_more_clicks = round((total_num_bonuses - showing_num_bonuses)/10)
+print('num_more_clicks', num_more_clicks)
+for i in range(num_more_clicks):
     driver.find_element_by_xpath("//button[@class='jss67 jss41 jss52 jss54 jss55 jss57 bonuses2__MoreButton-e8w5h-21 dBqZTv']").click()
 
-# driver.find_element_by_xpath("//div[@id='select-']").click()
-# driver.find_element_by_xpath(state_xpath).click()
-# driver.find_element_by_xpath("//button[@class='jss67 jss41 jss52 jss54 jss55 jss57 jss65 Landing__FindBonusButton-sc-1u30fgc-12 gShgCR']").click()
-# print(driver.find_element_by_xpath("//span[@class='jss749']").text())
+# print([i.text for i in driver.find_elements_by_css_selector('td')])
+
+# for bonus in find_all_divs_under_"//div[@class='bonuses2__BonusesDiv-e8w5h-6 dMSxJl']":
+#     click 'details': "//button[@class='jss67 jss41 jss49 BonusDetailDialogue__StyledButton-sc-1j8lk29-0 kpYlIk']"
+#     scrape td.text under all tr elements
+#     scrape bonus details
 
 
 soup = BeautifulSoup(driver.page_source, "html.parser")
 print(soup.prettify())
-
 
 
 
